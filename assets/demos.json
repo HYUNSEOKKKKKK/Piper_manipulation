@@ -1,0 +1,30 @@
+[
+  {
+    "file": "separated_boxes.gif",
+    "source_recording": "IMG_8200.MP4",
+    "source_sha256": "8f83e2f702562b1091d8d59c84b1bf82b290f9e4417dae7f08abacc865913960",
+    "start_s": 2.0,
+    "duration_s": 47.0,
+    "playback_speed": 4,
+    "fps": 8,
+    "width_px": 400,
+    "description": "Separated boxes: one complete recorded feed cycle",
+    "controller_mode": "Historical nine-stage feed; operator approval per cycle",
+    "sha256": "85a4b234ea04951fbe0680915e0f20ce72703a582b09cafc2d056ae547923b6f",
+    "bytes": 2235545
+  },
+  {
+    "file": "stacked_boxes.gif",
+    "source_recording": "IMG_8201.MP4",
+    "source_sha256": "3e67c7e8aa29e6d8b56ab8cc88624cfb8c1b3f9b2781bb4a46168460f6089276",
+    "start_s": 1.0,
+    "duration_s": 45.0,
+    "playback_speed": 4,
+    "fps": 8,
+    "width_px": 400,
+    "description": "Stacked boxes: first recorded feed cycle",
+    "controller_mode": "Historical nine-stage feed; operator approval per cycle",
+    "sha256": "ecd0f9a4977c58029ac778c90fdffdb12e1910e9d09b35b058f6b74b54968a5d",
+    "bytes": 2396967
+  }
+]
