@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!--
+  custom_piper_d435.xacro
+  ========================
+  AgileX PiPER (agx_gripper 포함) + eye-in-hand RealSense D435 + 모션 플래닝용 TCP.
+
+  구성:
+    1. AgileX 공식 piper_with_gripper_description.xacro 인클루드
+    2. camera_link  : link6 기준 카메라 장착 위치 (eye-in-hand)
+    3. tcp_link     : link6 로부터 Z 축 0.1425 m — MoveIt 플래닝의 엔드 이펙터 기준점
+    4. ros2_control : mock_components/GenericSystem (fake hardware)
+
+  프레임 트리:
+    world -> base_link -> link1..link6 -+-> flange_link -> gripper_base -> gripper_link1/2
+                                        +-> camera_link  (+ RealSense 드라이버가 광학 프레임 부착)
+                                        +-> tcp_link
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="piper_d435">
+
+  <xacro:arg name="initial_positions_file"
+             default="$(find piper_pnp)/config/initial_positions.yaml"/>
+
+  <!-- ==================================================================
+       1. AgileX 공식 로봇 모델 (팔 + 그리퍼)
+       piper_description.urdf 를 내부에서 인클루드하며 world/base_link 를 정의한다.
+       ================================================================== -->
+  <xacro:include
+      filename="$(find agx_arm_description)/agx_arm_urdf/piper/urdf/piper_with_gripper_description.xacro"/>
+
+  <!-- ==================================================================
+       2. 카메라 프레임 (eye-in-hand, RealSense D435)
+
+       link6 를 부모로 하는 고정 조인트. 값은 실측 마운트 기준이며 핸드-아이
+       캘리브레이션 결과가 나오면 이 origin 만 갱신하면 된다.
+
+       [주의] 의도적으로 collision 을 넣지 않았다. collision 을 주면 SRDF 에
+       disable_collisions 를 추가하지 않는 한 MoveIt 이 "항상 충돌 상태"로 판단해
+       모든 플래닝이 실패한다. 여기서는 RViz 확인용 visual 만 둔다.
+
+       [주의] 광학 프레임(camera_color_optical_frame 등)은 여기서 정의하지 않는다.
+       실기에서는 realsense2_camera 드라이버가 camera_link 를 부모로 직접 발행하므로,
+       중복 정의하면 TF 가 충돌한다.
+       ================================================================== -->
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- D435 외형 근사: 90 x 25 x 25 mm -->
+        <box size="0.025 0.090 0.025"/>
+      </geometry>
+      <material name="d435_dark">
+        <color rgba="0.15 0.15 0.15 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="link6"/>
+    <child link="camera_link"/>
+    <origin xyz="-0.080 -0.015 0.035" rpy="0 -1.2 0"/>
+  </joint>
+
+  <!-- ==================================================================
+       3. TCP 프레임 — MoveIt 엔드 이펙터 기준점
+
+       제조사 URDF 기준:
+         link6 -> flange_link        : z + 0.0000
+         flange_link -> gripper_base : z + 0.0045
+         gripper_base -> 손가락 조인트 : z + 0.1380
+         합계                          : z + 0.1425
+
+       메시 형상으로 확인한 결과, 이 지점은 손가락의 **맨 끝단**이다.
+       손가락 메시는 조인트 원점에서 뒤쪽(-z)으로 76.5 mm 뻗어 있어
+       link6 기준 z = +0.0660 .. +0.1425 를 차지한다. 즉 tcp_link 는
+       그리퍼가 도달할 수 있는 가장 먼 점에 정확히 놓여 있다.
+       ================================================================== -->
+  <link name="tcp_link"/>
+
+  <joint name="tcp_joint" type="fixed">
+    <parent link="link6"/>
+    <child link="tcp_link"/>
+    <origin xyz="0 0 0.1425" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ==================================================================
+       4. ros2_control
+       ================================================================== -->
+  <xacro:include filename="$(find piper_pnp)/config/piper.ros2_control.xacro"/>
+  <xacro:piper_pnp_ros2_control
+      name="PiperPnpSystem"
+      initial_positions_file="$(arg initial_positions_file)"/>
+
+</robot>

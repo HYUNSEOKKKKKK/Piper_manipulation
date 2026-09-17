@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>piper_pnp</name>
+  <version>0.1.0</version>
+  <description>
+    AgileX PiPER eye-in-hand ArUco pick and place (MoveIt 2).
+    커스텀 URDF(카메라 + TCP), 독립 MoveIt 설정, 9단계 상태 머신 컨트롤러를 포함한다.
+  </description>
+  <maintainer email="125255496+HYUNSEOKKKKKK@users.noreply.github.com">Piper_manipulation contributors</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <!-- 로봇 모델: AgileX 공식 description (piper_with_gripper_description.xacro, 메시) -->
+  <exec_depend>agx_arm_description</exec_depend>
+
+  <!-- MoveIt 2 -->
+  <exec_depend>moveit_configs_utils</exec_depend>
+  <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_ros_visualization</exec_depend>
+  <exec_depend>moveit_planners</exec_depend>
+  <exec_depend>moveit_kinematics</exec_depend>
+  <exec_depend>pick_ik</exec_depend>
+  <exec_depend>moveit_simple_controller_manager</exec_depend>
+
+  <!-- ros2_control (fake hardware = mock_components/GenericSystem) -->
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+
+  <!-- 런타임 -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>builtin_interfaces</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
+  <exec_depend>moveit_msgs</exec_depend>
+  <exec_depend>shape_msgs</exec_depend>
+  <exec_depend>action_msgs</exec_depend>
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+
+  <!-- 실기 전용 (pnp_real.launch.py). 시뮬레이션만 쓸 경우 없어도 무방하다. -->
+  <exec_depend>agx_arm_ctrl</exec_depend>
+  <exec_depend>agx_arm_msgs</exec_depend>
+  <exec_depend>ros2_aruco</exec_depend>
+  <exec_depend>ros2_aruco_interfaces</exec_depend>
+  <exec_depend>realsense2_camera</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

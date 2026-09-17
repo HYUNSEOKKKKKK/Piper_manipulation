@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "repositories": [
+    {"name": "MobileSAM", "url": "https://github.com/ChaoningZhang/MobileSAM.git", "commit": "f706ad9c4eb7f219c00d9050e46328518ffb65d2", "group": "perception", "directory": "third_party/MobileSAM"},
+    {"name": "agx_arm_ros", "url": "https://github.com/agilexrobotics/agx_arm_ros.git", "commit": "77882f4305c5e169b4542b408ac9f6755bdfa7c8", "group": "robot", "directory": ".workspace/src/agx_arm_ros"},
+    {"name": "pyAgxArm", "url": "https://github.com/agilexrobotics/pyAgxArm.git", "commit": "fc8d28008eee6ae209a93f2aa9d3896845e5c2ef", "group": "robot", "directory": ".workspace/vendor/pyAgxArm"},
+    {"name": "ros2_aruco", "url": "https://github.com/JMU-ROBOTICS-VIVA/ros2_aruco.git", "commit": "a86d8b99c645891fa50977f574c0ab0f95e03c02", "group": "robot", "directory": ".workspace/src/ros2_aruco"}
+  ]
+}

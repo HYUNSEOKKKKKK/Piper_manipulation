@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!--
+  piper.ros2_control.xacro
+  ========================
+  PiPER + agx_gripper 용 ros2_control 정의.
+
+  하드웨어 플러그인은 시뮬레이션/실기 모두 mock_components/GenericSystem 을 쓴다.
+  이는 AgileX 업스트림(agx_arm_moveit)과 동일한 구조로, 실기에서는 다음 흐름을 탄다:
+
+    MoveIt -> arm_controller -> mock system -> /control/joint_states
+                                                    |
+                                      agx_arm_ctrl 노드가 구독 -> CAN -> 실제 팔
+                                                    |
+                                             /feedback/joint_states (실제 관절값)
+                                                    |
+                                   robot_state_publisher / move_group 이 구독
+
+  즉 mock system 은 "명령 통로"이고, 실제 상태는 feedback 토픽으로 되돌아온다.
+
+  [주의] gripper_joint1 / gripper_joint2 는 URDF 에서 gripper 조인트를 mimic 하므로
+  여기에 선언하지 않는다. robot_state_publisher 가 mimic 을 직접 계산한다.
+
+  [주의] 조인트를 매크로로 묶지 않고 그대로 펼쳐 썼다. xacro 는 매크로 안에서
+  매크로를 정의하는 것을 버전에 따라 다르게 처리하므로, 제조사 원본과 동일한
+  형태를 유지해 확실히 동작하게 한다.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="piper_pnp_ros2_control" params="name initial_positions_file">
+    <xacro:property name="initial_positions"
+                    value="${xacro.load_yaml(initial_positions_file)['initial_positions']}"/>
+
+    <ros2_control name="${name}" type="system">
+      <hardware>
+        <plugin>mock_components/GenericSystem</plugin>
+      </hardware>
+
+      <joint name="joint1">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['joint1']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="joint2">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['joint2']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="joint3">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['joint3']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="joint4">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['joint4']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="joint5">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['joint5']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="joint6">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['joint6']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="gripper">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['gripper']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+    </ros2_control>
+  </xacro:macro>
+
+</robot>

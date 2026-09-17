@@ -1,0 +1,36 @@
+{
+  "motion_mode": "feed_drop",
+  "operator_feed": true,
+  "max_transfers": 10,
+  "object_dims_m": [
+    0.078,
+    0.035,
+    0.03
+  ],
+  "pick_bounds_xy": [
+    0.2,
+    0.6,
+    0.0,
+    0.3
+  ],
+  "place_positions_m": [
+    [
+      0.41,
+      -0.18,
+      0.15
+    ]
+  ],
+  "place_exclusion_radius_m": 0.19,
+  "placed_box_envelope_m": [
+    0.26,
+    0.26,
+    0.1
+  ],
+  "table_z_m": 0.0,
+  "drop_zone_size_xy_m": [
+    0.26,
+    0.26
+  ],
+  "drop_max_height_m": 0.14,
+  "drop_clearance_m": 0.04
+}

@@ -1,0 +1,119 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /MotionPlanning1
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Wrist Camera
+      Normalize Range: true
+      Min Value: 0
+      Max Value: 1
+      Median window: 5
+      Topic:
+        Depth: 2
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /cuboid_pose_bridge/debug_image
+      Value: true
+    - Class: moveit_rviz_plugin/MotionPlanning
+      Name: MotionPlanning
+      Move Group Namespace: ""
+      Planning Request:
+        Interactive Marker Size: 0.1
+        Planning Group: arm
+      Planned Path:
+        Loop Animation: true
+        State Display Time: 0.05 s
+        Trajectory Topic: display_planned_path
+      Planning Scene Topic: monitored_planning_scene
+      Robot Description: robot_description
+      Scene Geometry:
+        Scene Alpha: 1
+      Scene Robot:
+        Robot Alpha: 0.5
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Name: PnP Targets
+      Namespaces: {}
+      Topic:
+        Depth: 100
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /pnp_targets
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Name: Sim Objects
+      Namespaces: {}
+      Topic:
+        Depth: 100
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /pnp_sim_objects
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Frame Timeout: 15
+      Marker Scale: 0.15
+      Show Arrows: false
+      Show Axes: true
+      Show Names: true
+      Frames:
+        All Enabled: false
+        base_link:
+          Value: true
+        camera_link:
+          Value: true
+        tcp_link:
+          Value: true
+      Value: false
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 1.8
+      Focal Point:
+        X: 0.15
+        Y: 0.0
+        Z: 0.25
+      Name: Current View
+      Pitch: 0.55
+      Target Frame: base_link
+      Yaw: 0.9
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1016
+  Hide Left Dock: false
+  Hide Right Dock: false
+  MotionPlanning:
+    collapsed: false
+  MotionPlanning - Trajectory Slider:
+    collapsed: false
+  QMainWindow State: 000000ff00000000fd00000002000000000000038e0000037dfc0200000001fb0000001800570072006900730074002000430061006d006500720061010000003d0000037d0000002800ffffff000000030000000000000000fc0100000004fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000011b00fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670000000000ffffffff000001f300fffffffb000000100044006900730070006c0061007900730000000000ffffffff0000015600fffffffb0000000a005600690065007700730000000000ffffffff0000010000ffffff000002e20000037d00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Views:
+    collapsed: false
+  Width: 1850
+  Wrist Camera:
+    collapsed: false
+  X: 70
+  Y: 27

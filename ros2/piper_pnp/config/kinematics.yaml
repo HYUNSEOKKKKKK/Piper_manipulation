@@ -1,0 +1,33 @@
+# IK 솔버 설정.
+#
+# 기본이던 KDL(Newton-Raphson 국소 반복)은 joint5(±1.2217, 손목 자유도가
+# 좁음) 근처에서 해가 있어도 자주 "없음"을 반환했다 (Step 3/6 IK 실패).
+# pick_ik(ros-humble-pick-ik, PickNik/MoveIt 팀 관리)로 교체한다.
+#
+#   - mode: global 이면 여러 시작점에서 반복 탐색 -> KDL보다 훨씬 끈질기다.
+#   - rotation_scale 을 낮추면 위치는 정확히, 자세(특히 yaw)는 덜 엄격하게
+#     맞춰도 되게 비용함수 가중치가 조정된다. 코드에서 yaw 를 자유화하지
+#     않고도 비슷한 효과를 얻을 수 있다.
+#
+# 미인식 키는 조용히 무시되니(로드만 되고 안 쓰임) 값을 바꿔가며 실험해도
+# 안전하다.
+arm:
+  kinematics_solver: pick_ik/PickIkPlugin
+  kinematics_solver_timeout: 0.05
+  kinematics_solver_attempts: 3
+
+  # ---- pick_ik 고유 파라미터 ----
+  mode: global
+  position_scale: 1.0
+  rotation_scale: 0.5            # 낮출수록 자세 오차 허용 폭이 커짐
+  position_threshold: 0.001      # [m] 성공 판정 임계값
+  orientation_threshold: 0.01    # [rad]
+  cost_threshold: 0.001
+  minimal_displacement_weight: 0.0
+  gd_step_size: 0.0001
+
+# 이전 KDL 설정 (롤백용으로 남겨둠):
+#   kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+#   kinematics_solver_search_resolution: 0.005
+#   kinematics_solver_timeout: 0.5
+#   kinematics_solver_attempts: 3

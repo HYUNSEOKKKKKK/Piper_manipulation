@@ -1,0 +1,41 @@
+# MoveIt 이 궤적 시간 파라미터화에 쓰는 속도/가속도 한계.
+# 위치 한계(lower/upper)는 URDF 값을 그대로 따른다.
+default_velocity_scaling_factor: 0.1
+default_acceleration_scaling_factor: 0.1
+
+joint_limits:
+  joint1:
+    has_velocity_limits: true
+    max_velocity: 5.0
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  joint2:
+    has_velocity_limits: true
+    max_velocity: 5.0
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  joint3:
+    has_velocity_limits: true
+    max_velocity: 5.0
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  joint4:
+    has_velocity_limits: true
+    max_velocity: 5.0
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  joint5:
+    has_velocity_limits: true
+    max_velocity: 5.0
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  joint6:
+    has_velocity_limits: true
+    max_velocity: 5.0
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  gripper:
+    has_velocity_limits: true
+    max_velocity: 1.0
+    has_acceleration_limits: true
+    max_acceleration: 1.0

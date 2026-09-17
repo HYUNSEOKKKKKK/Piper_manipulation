@@ -1,0 +1,208 @@
+# =====================================================================
+#  piper_pnp_controller 파라미터
+#
+#  런치에서 이 파일을 그대로 읽는다. 값만 바꾸고 다시 launch 하면 되며
+#  재빌드는 필요 없다 (colcon build --symlink-install 로 빌드한 경우).
+# =====================================================================
+/**:
+  ros__parameters:
+
+    # ---------- MoveIt ----------
+    planning_group: arm
+    ee_link: tcp_link              # 명세 5-2: 엔드 이펙터는 반드시 tcp_link
+    base_frame: base_link
+    arm_joints: [joint1, joint2, joint3, joint4, joint5, joint6]
+
+    planning_time: 10.0            # 플래닝 허용 시간 [s]
+    planning_attempts: 10
+    velocity_scaling: 0.1          # 0.0 ~ 1.0
+    acceleration_scaling: 0.1
+
+    # Cartesian(직선) 경로 — 4/5/7/8 단계에 사용
+    cartesian_max_step: 0.005      # 보간 간격 [m]
+    cartesian_min_fraction: 1.0    # 이 비율 미만이면 실패로 간주
+
+    # ---------- 자세 ----------
+    # Step 1 / 9 : Zero Pose. 관절이 펴진 안전한 홈 포지션.
+    zero_pose: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    # Step 2 / 5 / 8 : Camera-Ready Pose. 하단을 넓게 보는 상단 자세.
+    #
+    # [튜닝 방법] 실기 팔을 드래그 티칭으로 움직이며 카메라 화면을 실시간으로
+    # 보고 두 마커가 화각에 들어오는 자세를 잡는다. README 7.1 참고:
+    #   ./scripts/teach_camera_ready.sh can0
+    #   ros2 topic echo /feedback/joint_states --once   # position 앞 6개를 여기에
+    #
+    # PiPER 관절 한계:
+    #   joint1 ±2.6180 / joint2 0 ~ 3.1416 / joint3 -2.9671 ~ 0
+    #   joint4 ±1.7453 / joint5 ±1.2217   / joint6 ±2.0944
+    #
+    # 2026-09-02: 마커를 base 앞 0.35, 좌우 ±0.05 로 옮기고 실기 드래그 티칭으로
+    # 재설정. 카메라가 두 마커를 잡는 것 확인. joint5=1.128 은 한계(1.2217)에서
+    # 약 5.4° — 여유가 좁으니 재티칭 시 j5 를 더 낮추면 안전하다.
+    camera_ready_pose: [0.026704, 0.663574, -0.885964, 0.0, 1.128146, 0.021572]
+
+    # ---------- ArUco ----------
+    # 주 경로: ID 가 실려오는 ros2_aruco 의 ArucoMarkers 메시지
+    aruco_markers_topic: /aruco_markers
+    # 보조 경로: ID 가 없는 PoseArray (로컬 테스트용, 인덱스 0=pick, 1=place)
+    aruco_poses_topic: /aruco_poses
+    # /aruco_poses(PoseArray)는 ID 가 없어 인덱스로 pick/place 를 가른다. 실기에서
+    # 켜두면 ros2_aruco 의 검출 순서에 따라 ID 기반 결과를 덮어써 pick/place 가
+    # 겹치거나 뒤바뀐다. 실기 false. README 4절의 PoseArray 로컬 주입 때만 true.
+    use_pose_array_fallback: false
+
+    pick_marker_id: 0
+    place_marker_id: 1
+
+    guard_real_commands: false     # cuboid 실기 런치에서 true; 명령 중계/시드/도달 감시
+    feedback_max_age_s: 0.25
+    feedback_joint_tolerance: 0.03  # 실제 관절과 궤적 끝점 허용 편차 [rad]
+    feedback_arrival_timeout: 5.0
+    target_max_age_s: 0.5           # 원본 이미지 시각 기준, 중복 표본 제외
+
+    marker_wait_timeout: 60.0      # Step 2 에서 두 마커를 기다리는 최대 시간 [s]
+    tf_timeout: 1.0                # 명세 5-1: TF 외삽 타임아웃 [s]
+
+    # Step 2 좌표 확정을 순간 글리치가 아니라 안정된 검출로만. 최근
+    # marker_stable_window 초 안에 marker_stable_samples 개 이상 모이고, 그
+    # 위치들이 중앙값에서 marker_stable_spread [m] 이내일 때만 확정(중앙값으로).
+    # 검출이 튀면 확정을 미루고, 안 잡히면 marker_wait_timeout 에서 실패한다.
+    # 검출이 원래 좀 흔들리면 spread 를 키우거나(0.02) samples 를 줄인다.
+    marker_stable_samples: 4
+    marker_stable_window: 3.0
+    marker_stable_spread: 0.02      # 실기 ArUco 는 ~10mm 흔들림. sim 은 0.005 로.
+    marker_stable_yaw_deg: 15.0     # 샘플 yaw 편차 이보다 크면(뒤집힘) 확정 미룸
+
+    # ---------- 접근/후퇴 ----------
+    # 마커 법선(= 그리퍼 접근 축) 방향으로 이 거리만큼 띄운 곳이 Pick/Place-Ready 지점.
+    # 마커가 평면에 놓여 있으면 이 축은 월드 Z 축과 정확히 일치한다.
+    approach_offset: 0.03
+
+    # 파지/해제 지점을 마커 평면에서 법선 방향으로 얼마나 띄울지 [m].
+    #   0.0  -> 손가락 끝이 마커 평면에 닿는 위치
+    #   음수 -> 더 깊이 내려간다 (손가락이 물체를 감싼다)
+    #   양수 -> 덜 내려간다
+    #
+    # tcp_link 는 손가락 '끝단'이다 (link6 기준 z=0.1425, 손가락 길이 76.5mm).
+    # 0.0 이면 손끝이 마커 표면에 겨우 닿아 물체를 감싸지 못하므로,
+    # -0.030 이면 보정된 파지 기준점보다 접근축 방향으로 30mm 더 들어간다.
+    # cuboid bridge 표면 보정 +5mm와 합치면 법선 정렬 시 추정 표면 아래 25mm.
+    # -0.076 을 넘으면 그리퍼 본체가 닿는다. 파지가 미끄러지면 더 음수로.
+    grasp_offset: -0.030
+
+    # 놓기(7단계) 지점 offset. 집을 땐 grasp_offset, 놓을 땐 이 값을 쓴다.
+    # +0.032 이면 place 기준점에서 접근축 바깥쪽 32mm에서 그리퍼를 연다. pick 의
+    # grasp_offset 과 독립. place_approach_offset 보다 작아야 한다.
+    place_offset: 0.032
+
+    # Place-Ready(6단계) 접근 높이. pick 은 approach_offset(0.03)에 묶여 있으므로
+    # place 는 이 값을 따로 둔다. 50mm -> 32mm(place_offset)로 18mm 하강.
+    place_approach_offset: 0.05
+
+    # true 면 박스-그리퍼 상대 회전을 유지해 박스 긴 변을 place 마커 X축에 정렬.
+    #   q_place = q_marker_place · q_marker_pick⁻¹ · q_pick
+    # 수평 배치를 우선하고, IK가 안 되면 긴 변의 수평 방향을 유지하는 tilt만 허용.
+    # 박스 0/180도 대칭만 허용하며 90도 회전/방향 자유 폴백은 하지 않는다.
+    place_match_pick_tilt: true
+    place_alignment_tolerance_deg: 5.0  # 놓기 직전 관절 피드백 기준 긴 변 방향 오차
+    # 긴 변 방향을 유지한 채 놓기 기울기를 찾는 방향. 집기 후보와 별도다.
+    place_tilt_azimuths_deg: [0.0, 180.0, 90.0, 270.0, 45.0, 135.0, 225.0, 315.0]
+
+    # 파지 자세를 어떻게 정할지 (Pick/Place-Ready, 3·6단계).
+    #
+    #   candidates    : 이산 자세 후보를 '편차 작은 순'으로 나열하고 /compute_ik
+    #                   로 걸러, IK 해가 있는 첫 자세를 정확히 실행. 전부 실패하면
+    #                   tolerance 로 폴백. (권장 — 넓은 tolerance 에서 무작위로
+    #                   뽑아 이상한 자세가 나오던 문제를 없앤다.)
+    #   tolerance     : OrientationConstraint 에 tilt tolerance 박스를 준다.
+    #                   grasp_tilt_tolerance / free_grasp_yaw 사용.
+    #   position_only : 자세 제약 없음, 위치만. 접근/하강 월드 수직. (디버그 —
+    #                   "IK 가 이상한지 / ArUco 자세가 이상한지" 격리용.)
+    grasp_ik_mode: candidates
+
+    # candidates 모드 후보 나열 (tilt 작은 것 우선 → tilt=0 인 모든 yaw 를
+    # 먼저 시도한 뒤에야 기울어진 후보로 넘어간다):
+    #   grasp_yaw_candidates_deg  : 접근축 둘레 yaw 오프셋(마커 기준). 직육면체는
+    #     [0, 90, 180, 270] — 2조 그리퍼엔 다 같은 파지지만 joint6 관절값이
+    #     달라, yaw 0°가 관절 한계로 IK 안 될 때 180°/270°가 풀리기도 한다.
+    #     (place 는 별도로 박스 0/180도 대칭만 허용)
+    #   grasp_tilt_candidates_deg : 접근축을 마커 법선에서 기울이는 크기. 0 부터.
+    #   grasp_tilt_azimuths_deg   : tilt 방향 (tilt=0 이면 무시).
+    #   grasp_ik_check_timeout    : 후보 하나당 /compute_ik 타임아웃 [s].
+    grasp_yaw_candidates_deg: [0.0, 90.0, 180.0, 270.0]
+    grasp_tilt_candidates_deg: [0.0, 15.0, 30.0, 45.0]
+    grasp_tilt_azimuths_deg: [0.0, 180.0, 90.0, 270.0]
+    grasp_ik_check_timeout: 0.05
+
+    # tolerance 모드용 (candidates 가 전부 실패해 폴백할 때도 쓰임):
+    #   grasp_tilt_tolerance : 접근축이 마커 법선에서 벗어나도 되는 최대 각 [rad]
+    #                          (0.8 ≈ 46°).
+    #   free_grasp_yaw       : true 면 yaw 도 제약 안 함 (원통·대칭 물체용).
+    grasp_tilt_tolerance: 0.8
+    free_grasp_yaw: false
+
+    # 런치 직후 컨트롤러 스포너가 끝날 때까지 첫 이동을 막는다.
+    arm_controller_action: /arm_controller/follow_joint_trajectory
+    controller_wait_timeout: 30.0
+
+    # ---------- 그리퍼 ----------
+    # false: 로그만 찍는 더미 동작 (시뮬레이션 검증용)
+    # true : gripper_controller 의 FollowJointTrajectory 액션 호출 (실기)
+    use_real_gripper: false
+    gripper_action: /gripper_controller/follow_joint_trajectory
+    gripper_joint: gripper
+    # URDF prismatic 한계는 0.0 ~ 0.1. 하드 스톱을 밀지 않도록 0.5cm 만 남기고
+    # 최대로 벌린다. (실제 파지 테스트 때 물체 폭에 맞춰 줄일 수 있음)
+    gripper_open_position: 0.095    # [m] 0.0 ~ 0.1
+    gripper_close_position: 0.0
+    gripper_settle_time: 1.0        # 그리퍼 동작 후 대기 [s]
+
+    # ---------- 플래닝 씬 ----------
+    # 테이블을 충돌 객체로 등록한다. 없으면 MoveIt 은 로봇 자기 자신만 알기 때문에
+    # 팔이 상판을 쓸고 지나가는 경로를 아무렇지 않게 만들어낸다.
+    add_table: true
+    table_size: [1.2, 1.2, 0.1]     # [x, y, z] m
+    table_center_xy: [0.0, 0.0]     # base_link 기준 상판 중심
+
+    # 상판의 z. 로봇 베이스가 테이블에 붙어 있으므로 물리적으로는 0.0 이지만,
+    # base_link 메시의 바닥면이 정확히 z=0 이라 그대로 두면 "항상 충돌" 로
+    # 판정돼 모든 플래닝이 실패한다. 그래서 1cm 낮춰 둔다.
+    # "start state is in collision" 오류가 나면 여기를 더 낮춰라.
+    table_top_z: -0.01
+
+    # ---------- 타겟 정합성 ----------
+    # 변환된 타겟이 이 범위를 벗어나면 검출 오류로 보고 무시한다 (PiPER 작업 반경).
+    min_reach: 0.12
+    max_reach: 0.75
+
+    # ---------- 안전 ----------
+    # agx_arm_ctrl 이 제공하는 실기 서비스. 시뮬레이션에는 없으며, 없으면 건너뛴다.
+    #
+    #   control_enable(false) : /control/* 명령 게이트를 닫는다
+    #   emergency_stop        : 현재 관절각을 그대로 목표로 재명령 = 자세 유지
+    #                           전원을 끊지 않으므로 팔이 자중으로 떨어지지 않는다
+    #
+    # [주의] enable_agx_arm(false) 는 토크를 풀어 팔이 떨어진다. 정지에 쓰면 안 된다.
+    control_enable_service: /control_enable
+    emergency_stop_service: /emergency_stop
+
+    # 단계별 확인: 각 단계를 실행하기 전에 승인을 기다린다.
+    # 승인은 ~/continue 서비스로 들어오며, 보통 estop 콘솔에서 c 키를 누른다.
+    # 실기 첫 주행에 켜고, 익숙해지면 끈다.
+    step_confirm: false
+    step_confirm_timeout: 300.0
+
+    # ---------- 동작 ----------
+    # true 면 9단계를 실행하지 않고 계획만 이어 붙여 RViz 에 보여준다.
+    # 각 단계는 앞 단계 궤적의 끝점에서 출발하도록 체이닝되며, 로봇은 움직이지 않는다.
+    preview_only: false
+    preview_step_delay: 2.0         # 단계 사이 대기 [s] — 애니메이션을 볼 시간
+
+    auto_start: true                # true 면 두 마커를 받는 즉시 상태 머신 시작
+
+    # true 면 한 사이클(홈 → 9단계 → 홈) 후 홈에서 멈춰, estop 콘솔의 c(또는
+    # ~/continue)를 받으면 상태를 초기화하고 다시 실행한다. 마커는 매 사이클
+    # 다시 인식. Ctrl-C 로 종료. 실험 반복용.
+    loop_mode: false
+    marker_topic_out: /pnp_targets  # RViz 디버깅용 Marker 발행 토픽

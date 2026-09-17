@@ -1,0 +1,34 @@
+# Downloaded dependencies and model weights
+third_party/MobileSAM/
+.workspace/
+weights/*
+!weights/README.md
+*.pt
+*.pth
+*.onnx
+*.engine
+# Local environments, builds and runtime state
+.venv*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+install/
+log/
+*.so
+*.state.json*
+config/local*
+.env
+.env.*
+# Research recordings and generated distributions
+captures/
+outputs/
+*.bag
+*.db3
+*.mcap
+*.mp4
+*.MP4
+*.zip
+*.tar*
+.DS_Store

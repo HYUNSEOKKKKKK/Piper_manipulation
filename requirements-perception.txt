@@ -1,0 +1,14 @@
+-r requirements-core.txt
+# Install torch==2.6.0 and torchvision==0.21.0 with the matching CUDA index first.
+# The patched MobileSAMv2 checkout supplies its own Ultralytics 8.0.120 fork.
+# Do not pip-install another ultralytics version over it.
+timm==1.0.15
+matplotlib==3.10.9
+Pillow==12.3.0
+requests==2.34.2
+tqdm==4.70.0
+pandas==2.3.3
+seaborn==0.13.2
+psutil==7.2.2
+thop==0.1.1.post2209072238
+py-cpuinfo==9.0.0

@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: 'Please cite this software and the upstream perception and robotics projects listed in NOTICE.md.'
+title: 'Piper_manipulation: RGB-D cuboid pose estimation and PiPER manipulation'
+type: software
+authors:
+  - name: 'Piper_manipulation contributors'
+repository-code: 'https://github.com/HYUNSEOKKKKKK/Piper_manipulation'
+version: 0.1.0
+date-released: '2026-09-17'
+license: Apache-2.0

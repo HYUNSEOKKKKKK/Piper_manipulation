@@ -1,0 +1,51 @@
+# =====================================================================
+#  fake_aruco_publisher 파라미터 (시뮬레이션 전용)
+#
+#  실제 카메라 없이 "카메라가 마커를 본다"를 재현한다. 마커를 base_link 기준
+#  고정 위치에 놓고, 매 주기 현재 camera_link 위치에서 실제로 보이는지
+#  (FOV / 거리 / 마커가 카메라를 향하는지) 판정해 보이는 것만 발행한다.
+#
+#  RViz 의 /pnp_sim_objects 에서 물체가 초록이면 보이는 것, 회색이면 안 보이는
+#  것이다. camera_ready_pose 를 튜닝할 때 이 색만 보면 된다.
+# =====================================================================
+/**:
+  ros__parameters:
+
+    base_frame: base_link
+    camera_frame: camera_link
+
+    # ---------- 마커 배치 (base_link 기준) ----------
+    # rpy 가 전부 0 이면 마커 평면이 수평이고 법선이 +Z 를 향한다
+    # = 책상에 평평히 놓인 상태 -> 그리퍼가 수직으로 내려와 잡는다.
+    # pitch 를 주면 기울어진 물체가 되어 그리퍼도 같이 기운다.
+    pick_marker_id: 0
+    pick_marker_xyz: [0.35, 0.05, 0.05]
+    pick_marker_rpy: [0.0, 0.0, 0.0]
+
+    place_marker_id: 1
+    place_marker_xyz: [0.35, -0.05, 0.05]
+    place_marker_rpy: [0.0, 0.0, 0.0]
+
+    # ---------- 물체 외형 ----------
+    # 마커는 이 상자의 윗면 중앙에 붙어 있다고 본다.
+    object_size: [0.04, 0.04, 0.05]   # [x, y, z] m
+    marker_size: 0.05                 # 마커 한 변 [m]
+
+    # ---------- 카메라 (RealSense D435 컬러 기본값) ----------
+    hfov_deg: 69.4
+    vfov_deg: 42.5
+    min_range: 0.10
+    max_range: 2.00
+    # 마커 법선과 시선이 이보다 벌어지면 검출 실패로 본다
+    max_view_angle_deg: 75.0
+    # 렌즈가 바라보는 camera_link 의 축.
+    # 이 URDF 의 camera_link 는 ROS 카메라 바디 프레임 규약(REP-103, +X 전방)이라
+    # 렌즈축은 +X 다. (camera_joint rpy="0 -1.2 0" -> camera_link +X 가 link6 +Z,
+    # 즉 그리퍼 접근축 방향으로 ~21° 기울어 정렬된다. 실물 마운트와 일치.)
+    # 실기에서는 realsense2_camera 드라이버가 camera_link 밑에 광학 프레임을 붙인다.
+    view_axis: x
+
+    publish_rate: 10.0
+    markers_topic: /aruco_markers
+    poses_topic: /aruco_poses
+    viz_topic: /pnp_sim_objects
