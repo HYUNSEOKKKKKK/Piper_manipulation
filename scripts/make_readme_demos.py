@@ -11,9 +11,12 @@ from pathlib import Path
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
+HISTORICAL = 'Historical nine-stage feed; operator approval per cycle'
+FEED_AUTO = 'Continuous feed-auto; one operator approval starts the run'
 CLIPS = (
-    ('IMG_8200.MP4', 'separated_boxes.gif', 2.0, 47.0, 'Separated boxes: one complete recorded feed cycle'),
-    ('IMG_8201.MP4', 'stacked_boxes.gif', 1.0, 45.0, 'Stacked boxes: first recorded feed cycle'),
+    ('IMG_8200.MP4', 'separated_boxes.gif', 2.0, 47.0, 'Separated boxes: one complete recorded feed cycle', HISTORICAL),
+    ('IMG_8201.MP4', 'stacked_boxes.gif', 1.0, 45.0, 'Stacked boxes: first recorded feed cycle', HISTORICAL),
+    ('Final_manipulationtest.mp4', 'feed_auto_run.gif', 0.0, 88.5, 'Continuous feed-auto run: four boxes transferred into the tray', FEED_AUTO),
 )
 
 
@@ -25,7 +28,7 @@ def main():
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     manifest = []
-    for source_name, output_name, start, duration, description in CLIPS:
+    for source_name, output_name, start, duration, description, controller_mode in CLIPS:
         source, output = args.source_dir / source_name, args.output_dir / output_name
         if not source.is_file():
             raise SystemExit(f'Missing recording: {source}')
@@ -43,7 +46,7 @@ def main():
                              source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                              start_s=start, duration_s=duration, playback_speed=4,
                              fps=8, width_px=400, description=description,
-                             controller_mode='Historical nine-stage feed; operator approval per cycle',
+                             controller_mode=controller_mode,
                              sha256=hashlib.sha256(output.read_bytes()).hexdigest(), bytes=output.stat().st_size))
         print(f'{output.name}: {output.stat().st_size / 1048576:.2f} MiB')
     (args.output_dir / 'demos.json').write_text(json.dumps(manifest, indent=2) + '\n')

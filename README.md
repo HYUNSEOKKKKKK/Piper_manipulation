@@ -23,6 +23,13 @@
 
 <table>
   <tr>
+    <td align="center" colspan="2">
+      <b>Continuous <code>feed-auto</code> run</b><br>
+      Four transfers from a single approval · 4× playback<br><br>
+      <img src="assets/feed_auto_run.gif" width="400" alt="PiPER picking boxes fed one at a time onto the table and placing each in a tray during one continuous feed-auto run, shown at four times recorded speed">
+    </td>
+  </tr>
+  <tr>
     <td align="center" width="50%">
       <b>Separated boxes</b><br>
       One recorded pick-and-place cycle · 4× playback<br><br>
@@ -36,9 +43,10 @@
   </tr>
 </table>
 
-These clips show the **earlier nine-stage feed controller**, with operator approval
-for each cycle. They demonstrate recorded physical transfers, not the current
-`feed-auto` cycle time or autonomous clearing of arbitrary piles.
+The top clip is one continuous `feed-auto` run: a single approval, then four boxes
+transferred as they are fed onto the table one at a time. The two clips below show the
+**earlier nine-stage feed controller**, with operator approval for each cycle. All three
+are recorded physical transfers; none of them shows autonomous clearing of an arbitrary pile.
 [Clip intervals and provenance](assets/README.md).
 
 <details>
@@ -56,6 +64,7 @@ external ground-truth pose accuracy. [Method details](docs/METHOD.md).
 
 ## News & updates
 
+- **2026-09-20:** A recorded continuous `feed-auto` run was added to the demos.
 - **2026-09-17:** Public release with two box models, continuous `feed-auto`, pinned dependencies, verified model downloads, a CPU example and automated tests. Recorded demos and a visual pipeline are now included.
 
 ## Supported hardware and inputs

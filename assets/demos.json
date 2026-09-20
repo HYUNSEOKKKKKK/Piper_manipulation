@@ -26,5 +26,19 @@
     "controller_mode": "Historical nine-stage feed; operator approval per cycle",
     "sha256": "ecd0f9a4977c58029ac778c90fdffdb12e1910e9d09b35b058f6b74b54968a5d",
     "bytes": 2396967
+  },
+  {
+    "file": "feed_auto_run.gif",
+    "source_recording": "Final_manipulationtest.mp4",
+    "source_sha256": "db203d0a2c08179f09ceee7dc071f2deaa745b806e234ba5e2b7d7b27dce122c",
+    "start_s": 0.0,
+    "duration_s": 88.5,
+    "playback_speed": 4,
+    "fps": 8,
+    "width_px": 400,
+    "description": "Continuous feed-auto run: four boxes transferred into the tray",
+    "controller_mode": "Continuous feed-auto; one operator approval starts the run",
+    "sha256": "fbb8b8a9cda222284015397028a85c20809c72757055f5f56c3c84d6e2e40bc0",
+    "bytes": 3461475
   }
 ]
