@@ -7,6 +7,7 @@ Start with the **[README demos and quick start](README.md)** or the
 |---|---|
 | Try pose estimation without hardware | [CPU quick start](README.md#try-perception-first--cpu-only) |
 | Install ROS, ML dependencies and models | [Installation](docs/INSTALL.md) |
+| Locate environments, code, weights and preserved experiments | [Project workspace](docs/WORKSPACE.md) |
 | Configure my camera mount, TCP and boxes | [Hardware configuration](docs/ROBOT.md#configure-the-actual-setup) |
 | Run the three-terminal robot experiment | [Robot operation](docs/ROBOT.md#three-terminals) |
 | Recover from CAN, teaching-mode or trajectory errors | [Recovery](docs/ROBOT.md#recovery-and-common-failures) |

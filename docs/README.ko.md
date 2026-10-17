@@ -10,6 +10,12 @@ Git에 넣지 않고 고정된 버전으로 별도 받습니다. `fetch_weights.
 파일의 크기와 SHA-256을 검사합니다. YOLO 포함 구성의 AGPL 조건은
 [NOTICE.md](../NOTICE.md)에 따로 적었습니다.
 
+기준 폴더는 `~/Piper_manipulation`, 인식용 Conda 환경 이름은
+`piper_manipulation`입니다. PiPER 제어용 Python은 프로젝트 안의 `.venv-robot`,
+모델은 `weights/`, ROS 소스와 빌드 결과는 `.workspace/`에서 관리합니다.
+시스템 ROS 2 Humble 설치도 필요합니다. [폴더와 보존 자료](WORKSPACE.md),
+[작업 재개 안내](../RESUME.md)를 참고하세요.
+
 실험 PC에서 쓰던 폴더와 독립적인 구조입니다. 기존 `~/run_robot.sh` 등의
 개인용 바로가기를 덮어쓰지 않습니다. 이 저장소를 사용할 때는 저장소 루트에서:
 
@@ -17,6 +23,7 @@ Git에 넣지 않고 고정된 버전으로 별도 받습니다. `fetch_weights.
 # 터미널 1
 bash scripts/run_robot.sh feed-auto
 # 터미널 2
+conda activate piper_manipulation
 bash scripts/run_bridge.sh feed-auto
 # 터미널 3
 bash scripts/run_console.sh

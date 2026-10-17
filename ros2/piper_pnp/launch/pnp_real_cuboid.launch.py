@@ -72,7 +72,7 @@ def _setup(context):
         )
 
     # ---------------- (ArUco 없음) ----------------
-    # /aruco_markers 는 perception/ros_pose_bridge.py 가 defm 환경에서 발행한다.
+    # /aruco_markers 는 perception/ros_pose_bridge.py 가 Piper 전용 환경에서 발행한다.
 
     # ---------------- 상태 머신 ----------------
     actions.append(

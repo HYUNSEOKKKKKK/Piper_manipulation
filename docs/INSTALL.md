@@ -1,8 +1,11 @@
 # Installation
 
 Commands below assume Ubuntu 22.04, ROS 2 Humble and `/usr/bin/python3` 3.10.
-Work from the repository root. The `.workspace` and `.venv-*` directories are
-local, ignored by Git, and do not modify another robot workspace.
+Work from the repository root. Use the dedicated `piper_manipulation` Conda
+environment for perception and the system Python's project-local `.venv-robot`
+for ROS control. `.workspace`, `.venv-*` and `.local` are ignored by Git and do
+not modify another robot workspace. The two environments belong to this project;
+the system ROS installation remains under `/opt/ros/humble`.
 
 ## 1. ROS and system packages
 
@@ -41,8 +44,8 @@ lock of every system library.
 
 ```bash
 /usr/bin/python3 -m venv --system-site-packages .venv-robot
-.venv-robot/bin/python -m pip install 'setuptools<81' wheel
-.venv-robot/bin/python -m pip install .workspace/vendor/pyAgxArm
+.venv-robot/bin/python -m pip install --upgrade pip 'setuptools<81' wheel 'packaging>=24'
+.venv-robot/bin/python -m pip install --no-build-isolation .workspace/vendor/pyAgxArm
 bash scripts/build_workspace.sh
 ```
 
@@ -53,14 +56,16 @@ only builds: it never enables CAN, starts a driver or moves the arm.
 
 ## 3. Perception environment
 
-Use a separate Python 3.10 environment that can import the system ROS packages:
+Use the dedicated Python 3.10 Conda environment. If you created it for the CPU
+example, activate it and continue with the pip commands:
 
 ```bash
-/usr/bin/python3 -m venv --system-site-packages .venv-perception
-.venv-perception/bin/python -m pip install 'setuptools<81' wheel
-.venv-perception/bin/python -m pip install torch==2.6.0 torchvision==0.21.0 \
+conda create -n piper_manipulation python=3.10 pip -y
+conda activate piper_manipulation
+python -m pip install 'setuptools<81' wheel
+python -m pip install torch==2.6.0 torchvision==0.21.0 \
   --index-url https://download.pytorch.org/whl/cu124
-.venv-perception/bin/python -m pip install -r requirements-perception.txt
+python -m pip install -r requirements-perception.txt
 python3 scripts/fetch_weights.py
 bash scripts/build_native.sh
 ```
@@ -79,8 +84,9 @@ hashes are verified. The official Google Drive archive is an alternative:
 ## 4. Validation
 
 ```bash
-.venv-perception/bin/python -m pytest -q
-.venv-perception/bin/python examples/estimate_pose.py
+conda activate piper_manipulation
+python -m pytest -q
+python examples/estimate_pose.py
 python3 scripts/fetch_weights.py --verify
 ```
 
@@ -90,7 +96,7 @@ methods, source the newly built workspace first:
 ```bash
 source /opt/ros/humble/setup.bash
 source .workspace/install/setup.bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv-perception/bin/python -m pytest -q \
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q \
   ros2/piper_pnp/test tests/perception
 ```
 
@@ -98,12 +104,20 @@ These tests replace publishers, service/action clients and motion execution with
 local test objects. They do not execute a physical robot experiment. The CPU CI
 runs without vendor checkouts, weights, ROS, CUDA or hardware.
 
+The launch scripts select the active Conda environment when its name is
+`piper_manipulation`. `run_bridge.sh` sources ROS and the project's built
+workspace before starting that Python, making the Humble message modules
+available without installing DeFM or borrowing another project's environment.
+You can also use a system-site-packages `.venv-perception` as before, or choose
+an interpreter explicitly with `PIPER_PERCEPTION_PYTHON`. Recreate local
+environments and rebuild `.workspace` after moving to another machine.
+
 ## Optional paths
 
 | Variable | Default |
 |---|---|
 | `PIPER_WS` | `<repo>/.workspace` for launch/build scripts |
-| `PIPER_PERCEPTION_PYTHON` | `<repo>/.venv-perception/bin/python` |
+| `PIPER_PERCEPTION_PYTHON` | Active `piper_manipulation` Conda Python; otherwise `<repo>/.venv-perception/bin/python` |
 | `PIPER_ROBOT_PYTHON` | `<repo>/.venv-robot/bin/python` for build |
 | `PIPER_CAN` | `can0` |
 | `PIPER_OBJECT_MODELS` | `<repo>/config/object_models.json` |

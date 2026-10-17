@@ -9,6 +9,7 @@ weights/*
 *.engine
 # Local environments, builds and runtime state
 .venv*/
+/.venv-perception
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -32,3 +33,6 @@ outputs/
 *.zip
 *.tar*
 .DS_Store
+
+# Workstation-only research archive, environment records and validation logs
+/.local/

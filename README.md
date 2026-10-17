@@ -64,6 +64,7 @@ external ground-truth pose accuracy. [Method details](docs/METHOD.md).
 
 ## News & updates
 
+- **2026-10-18:** Dedicated `piper_manipulation` Conda workflow, project-root path checks and workspace/archive documentation.
 - **2026-09-20:** A recorded continuous `feed-auto` run was added to the demos.
 - **2026-09-17:** Public release with two box models, continuous `feed-auto`, pinned dependencies, verified model downloads, a CPU example and automated tests. Recorded demos and a visual pipeline are now included.
 
@@ -90,8 +91,8 @@ catalog in perception and control. See [model configuration](docs/ROBOT.md#confi
 ```bash
 git clone https://github.com/HYUNSEOKKKKKK/Piper_manipulation.git
 cd Piper_manipulation
-python3.10 -m venv .venv-core
-source .venv-core/bin/activate
+conda create -n piper_manipulation python=3.10 pip -y
+conda activate piper_manipulation
 python -m pip install -r requirements-core.txt
 bash scripts/build_native.sh
 python examples/estimate_pose.py
@@ -117,6 +118,14 @@ checkpoints total about **188 MiB** and are downloaded separately, with size and
 SHA-256 verification. Raw videos, checkpoints, vendor checkouts and build outputs
 stay outside Git; only the small README previews are included.
 [Model sources and download alternatives](weights/README.md).
+
+Keep this checkout as the project root: `perception/` contains RGB-D SE(3)
+estimation and the ROS pose bridge; `ros2/piper_pnp/` contains MoveIt planning,
+arm/gripper control and launch configurations. Vendor sources, models, build
+output and runtime results stay under this same root. Use the dedicated
+`piper_manipulation` Conda environment for perception and a project-local
+`.venv-robot` for the system ROS Python. Other research environments are not
+required. See [workspace layout and preserved research](docs/WORKSPACE.md).
 
 ## Usage
 
@@ -150,6 +159,7 @@ bash scripts/run_robot.sh feed-auto
 
 ```bash
 # Terminal 2 — perception with the same model catalog and workspace
+conda activate piper_manipulation
 bash scripts/run_bridge.sh feed-auto
 ```
 
@@ -179,14 +189,16 @@ so stop before adding boxes. [Console controls and recovery](docs/ROBOT.md#conso
 | Measurement | Result | Scope |
 |---|---|---|
 | Recorded live processing rate | **7.7 Hz median**; 6.3–10.3 Hz, 5th–95th percentile | RTX 2070 SUPER + i9-9900K; 274 overlapping windows in a historical two-model run |
-| CPU regression suite | **125 passed**, 1 ROS-only test skipped | Geometry, configurations and release tools |
-| Mocked ROS/perception suite | **393 passed** | Controller decisions, pose adaptation, recovery and command gates |
-| Independent ROS build | **6 packages built** | Vendor interfaces, description, driver and `piper_pnp` |
+| CPU regression suite | **128 passed**, 1 ROS-only test skipped | 2026-10-18: geometry, configurations, release tools and environment selection |
+| Mocked ROS/perception suite | **393 passed** | 2026-09-17 release: controller decisions, pose adaptation, recovery and command gates |
+| Independent ROS build | **6 packages built** | 2026-09-17 release: vendor interfaces, description, driver and `piper_pnp` |
 
 Processing Hz differs from camera FPS, accepted-target rate and robot cycle time.
 The timing topic `/cuboid_pose_bridge/performance` reports stage costs; no
 from-scratch OS installation or new physical trial is claimed by these checks.
 [Measurement scope](docs/METHOD.md#timing-and-evidence) · [Validation record](docs/VALIDATION.md).
+The October workspace checks covered offline geometry and real model inference;
+the ROS build and mocked ROS suite await system ROS installation on that workstation.
 
 <details>
 <summary><b>Repository layout</b></summary>

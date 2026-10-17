@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 같은 PC의 defm 환경에서 인식. 실기에서는 CUDA와 촬영 시각 TF가 필요하다.
+# 같은 PC의 Piper 전용 환경에서 인식. 실기에서는 CUDA와 촬영 시각 TF가 필요하다.
 set -eo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"
 DIMS="[0.078, 0.035, 0.030]"
