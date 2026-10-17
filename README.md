@@ -202,16 +202,18 @@ so stop before adding boxes. [Console controls and recovery](docs/ROBOT.md#conso
 | Measurement | Result | Scope |
 |---|---|---|
 | Recorded live processing rate | **7.7 Hz median**; 6.3–10.3 Hz, 5th–95th percentile | RTX 2070 SUPER + i9-9900K; 274 overlapping windows in a historical two-model run |
-| CPU regression suite | **128 passed**, 1 ROS-only test skipped | 2026-10-18: geometry, configurations, release tools and environment selection |
-| Mocked ROS/perception suite | **393 passed** | 2026-09-17 release: controller decisions, pose adaptation, recovery and command gates |
-| Independent ROS build | **6 packages built** | 2026-09-17 release: vendor interfaces, description, driver and `piper_pnp` |
+| CPU regression suite without ROS | **128 passed**, 1 ROS-only test skipped | 2026-10-18: geometry, configurations, release tools and environment selection |
+| Mocked ROS/perception suite | **393 passed** | 2026-10-18: dedicated Conda + system ROS, controller decisions, pose adaptation, recovery and command gates |
+| Independent ROS build | **6 packages built** | 2026-10-18: project-local vendor interfaces, description, driver and `piper_pnp` |
+| Virtual hardware check | **Passed** | Actual MoveIt planning, mock arm trajectory execution and mock gripper action; no physical driver |
 
 Processing Hz differs from camera FPS, accepted-target rate and robot cycle time.
 The timing topic `/cuboid_pose_bridge/performance` reports stage costs; no
 from-scratch OS installation or new physical trial is claimed by these checks.
 [Measurement scope](docs/METHOD.md#timing-and-evidence) · [Validation record](docs/VALIDATION.md).
-The October workspace checks covered offline geometry and real model inference;
-the ROS build and mocked ROS suite await system ROS installation on that workstation.
+The October checks also started the actual CUDA perception node and replayed
+preserved RGB-D through the GPU segmenter and SE(3) solver. Physical CAN, camera
+streaming, calibration and picking remain equipment-dependent checks.
 
 <details>
 <summary><b>Repository layout</b></summary>

@@ -22,6 +22,49 @@ The robot arm alone does not supply the images, calibration or work-area
 measurements required by this perception algorithm. The supplied dimensions and
 mount/workspace values describe the development setup; adapt them below.
 
+## Check the ROS stack without hardware
+
+After installation, this launch uses only `mock_components/GenericSystem`.
+It starts MoveIt and the virtual controllers, with automatic sequence start and
+fake camera targets disabled. It does not start an arm or camera driver.
+
+```bash
+cd ~/Piper_manipulation
+source /opt/ros/humble/setup.bash
+source .workspace/install/setup.bash
+export ROS_DOMAIN_ID=163 ROS_LOCALHOST_ONLY=1
+ros2 launch piper_pnp pnp_demo.launch.py use_rviz:=false auto_start:=false use_fake_aruco:=false
+```
+
+In another terminal, source the same ROS/workspace, use the same two environment
+variables, and run `ros2 control list_controllers`. `arm_controller`,
+`gripper_controller` and `joint_state_broadcaster` should be active. Ctrl-C ends
+the virtual stack. Use fresh terminals for the physical session below so this
+diagnostic ROS domain does not accidentally differ between physical nodes.
+
+## Camera USB permissions
+
+Install the RealSense USB permission rules once per PC, before attaching the
+camera. The ROS camera packages on the verified workstation supplied the SDK
+libraries but did not install these rules. Reuse an existing RealSense rules
+installation when present; the commands below are for a PC without one.
+
+The following file is the official SDK 2.58.4 rule set, matching the validated
+ROS SDK version. Download it into the project and verify its hash before installation:
+
+```bash
+mkdir -p .local/system
+curl -fL https://raw.githubusercontent.com/realsenseai/librealsense/v2.58.4/config/99-realsense-libusb.rules \
+  -o .local/system/99-realsense-libusb.rules
+printf '%s\n' '34c287000862710b60732aea942bda6f51faf7436b5b53f66fbfd021bc8c22dd  .local/system/99-realsense-libusb.rules' | sha256sum --check
+sudo install -m 0644 .local/system/99-realsense-libusb.rules /etc/udev/rules.d/99-realsense-libusb.rules
+sudo udevadm control --reload-rules
+```
+
+The rules apply when the camera is next connected. See the
+[official SDK installation instructions](https://github.com/realsenseai/librealsense/blob/v2.58.4/doc/installation.md).
+Actual USB enumeration and RGB/aligned-depth streaming still need the camera.
+
 ## Configure the actual setup
 
 - Measure camera extrinsics in `ros2/piper_pnp/urdf/custom_piper_d435.xacro`.

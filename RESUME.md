@@ -28,24 +28,30 @@
 conda activate piper_manipulation
 cd ~/Piper_manipulation
 python examples/estimate_pose.py
-python -m pytest -q
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q
 ```
 
-로컬 인식 환경, 고정된 모델·업체 소스, native 기하 모듈과 robot SDK를 준비했습니다.
-CPU 테스트는 128개 통과, ROS 전용 1개 skip이며 실제 detector/SAM CPU 추론도
-38개 마스크를 생성했습니다. 두 Python 환경의 `pip check`도 통과했습니다.
-이 PC의 ROS 2 시스템 패키지는 아직 설치되지 않았으며, sudo 비밀번호 입력이 필요해
-ROS colcon 빌드와 ROS 메시지 의존 테스트는 보류 상태입니다. 시스템 설치 방법은
-[INSTALL.md](docs/INSTALL.md), 이 컴퓨터의 이어서 실행할 명령은 `.local/README.md`에 있습니다.
+이 PC의 시스템 ROS 2 Humble 설치와 프로젝트 ROS 6개 패키지 빌드를 완료했습니다.
+제어 환경의 setuptools는 colcon 호환 버전 79.0.1이며 두 환경의 `pip check`가 통과했습니다.
+ROS가 연결된 기본 테스트 129개, 전체 mocked ROS/인식 테스트 393개가 통과했습니다.
+실제 인식 노드도 RTX 3070에서 CUDA/FP16·native 기하·모델 2개로 초기화했습니다.
 
-이 PC의 로컬 터미널에서는 다음 명령이 관리자 인증 후 ROS 설치, 빌드, mocked 테스트를
-이어서 수행합니다. 로봇이나 카메라는 시작하지 않습니다.
+가상 하드웨어에서 MoveIt 경로 계획, 팔 궤적 실행, Cartesian 계획과 그리퍼 액션이
+성공했습니다. 보관된 RGB-D 12개 프레임도 실제 GPU 인식·SE(3) 코드로 재생했으며,
+2개는 타겟을 출력하고 10개는 적합도 조건으로 거부했습니다. 오프라인 재생은 TF와
+프레임 시간 제한을 해제한 카메라 좌표 진단이며 실기 정확도 측정은 아닙니다.
+
+이 컴퓨터에서 인식 노드 초기화와 mocked 테스트를 다시 확인하려면:
 
 ```bash
-bash ~/Piper_manipulation/.local/finish_ros_setup.sh
+bash .local/validate_ros_runtime.sh
 ```
 
-CPU 예제/테스트와 모델 로딩 확인은 실제 로봇 구동 또는 성능 검증과 구분합니다.
+실제 장비는 아직 연결하지 않았습니다. 다음 실기 세션은
+[ROBOT.md](docs/ROBOT.md)의 카메라 USB 권한·CAN 1 Mbit/s·PC 제어 모드·영상/TF 확인을
+거쳐 기존 3개 터미널로 시작합니다. 로컬 설치·검증 기록은 `.local/README.md`에 있습니다.
+
+하드웨어 없는 소프트웨어 검증과 실제 로봇 구동·성능 검증은 구분합니다.
 공개 데모 원본 영상 3개는 확인한 로컬 자료 위치에서 찾지 못했으므로, 다른 PC에 있다면
 출처·해시와 함께 별도로 보존해야 합니다. 촬영 장착/TCP/작업영역은 실제 장비에 맞춰
 [ROBOT.md](docs/ROBOT.md)를 확인하세요.

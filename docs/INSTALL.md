@@ -85,7 +85,7 @@ lock of every system library.
 
 ```bash
 /usr/bin/python3 -m venv --system-site-packages .venv-robot
-.venv-robot/bin/python -m pip install --upgrade pip 'setuptools<81' wheel 'packaging>=24'
+.venv-robot/bin/python -m pip install --upgrade pip 'setuptools<80' wheel 'packaging>=24'
 .venv-robot/bin/python -m pip install --no-build-isolation .workspace/vendor/pyAgxArm
 bash scripts/build_workspace.sh
 ```
@@ -94,6 +94,8 @@ The SDK is installed in the robot venv; the colcon build uses that Python for
 Python package entry points. `agx_arm_ctrl`, descriptions, ArUco message
 interfaces and this project's `piper_pnp` are built together. `build_workspace.sh`
 only builds: it never enables CAN, starts a driver or moves the arm.
+Keep the robot venv's setuptools below 80 to satisfy the installed colcon-core
+requirement. This pin is separate from the perception environment's pin below.
 
 ## 3. Perception environment
 
@@ -126,7 +128,7 @@ hashes are verified. The official Google Drive archive is an alternative:
 
 ```bash
 conda activate piper_manipulation
-python -m pytest -q
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q
 python examples/estimate_pose.py
 python3 scripts/fetch_weights.py --verify
 ```
@@ -147,6 +149,8 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q \
 These tests replace publishers, service/action clients and motion execution with
 local test objects. They do not execute a physical robot experiment. The CPU CI
 runs without vendor checkouts, weights, ROS, CUDA or hardware.
+Disabling automatic pytest plugin discovery keeps ROS launch-testing plugins
+from pulling system-only build dependencies into the Conda test process.
 
 Check the GPU used by the default live bridge before connecting the experiment:
 
@@ -157,12 +161,15 @@ python -c 'import torch; assert torch.cuda.is_available(), "CUDA is required by 
 An import failure here is an environment issue to resolve before launch. The
 Python 3.10 and NumPy 1.x pins are necessary for the documented combination;
 matching the version numbers alone does not prove ROS binary compatibility.
-The current workstation's system ROS installation and these ROS-dependent checks
-are still pending; [validation records](VALIDATION.md) distinguish that status
-from the earlier release's successful ROS build and mocked suite.
+The 2026-10-18 workstation checks passed the system ROS build, both Python
+environments' imports, the actual CUDA perception-node startup and 393 mocked
+ROS/perception tests. See [validation records](VALIDATION.md) for the exact scope
+and the separate virtual-hardware execution check.
 
 After these checks, configure the camera mount, TCP, object models, workspace
-and CAN connection in [ROBOT.md](ROBOT.md). Those values belong to the physical
+and camera USB permissions/CAN connection in [ROBOT.md](ROBOT.md). That guide also
+has a virtual-hardware ROS launch for checking the stack without an arm.
+The transforms, model dimensions and workspace values belong to the physical
 setup and cannot be supplied by cloning the repository alone.
 
 The launch scripts select the active Conda environment when its name is
