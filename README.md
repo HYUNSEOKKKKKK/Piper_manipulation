@@ -127,6 +127,19 @@ output and runtime results stay under this same root. Use the dedicated
 `.venv-robot` for the system ROS Python. Other research environments are not
 required. See [workspace layout and preserved research](docs/WORKSPACE.md).
 
+For a new machine, follow the guide in order: clone → install system ROS → fetch
+pinned sources → build the robot workspace → install the Conda perception
+dependencies and weights → run the offline/ROS checks → configure the hardware.
+ROS lives under `/opt/ros/humble`, while the robot Python and workspace build
+stay in this project. The launch scripts select the robot Python automatically;
+the perception terminal uses `conda activate piper_manipulation`.
+
+The documented full algorithm also needs a wrist-mounted RealSense D435,
+a SocketCAN-compatible arm connection and the default live bridge's CUDA GPU
+setup. Measure the camera/TCP transforms and configure the actual box sizes and
+source/drop workspace before running a different physical setup.
+[Equipment, first CAN connection and three-terminal start](docs/ROBOT.md).
+
 ## Usage
 
 ### 1. Estimate a pose from your own RGB-D data

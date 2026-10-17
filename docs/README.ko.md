@@ -16,6 +16,17 @@ Git에 넣지 않고 고정된 버전으로 별도 받습니다. `fetch_weights.
 시스템 ROS 2 Humble 설치도 필요합니다. [폴더와 보존 자료](WORKSPACE.md),
 [작업 재개 안내](../RESUME.md)를 참고하세요.
 
+새 PC에서는 **clone → 시스템 ROS 설치 → 고정 소스 받기 → 제어용 Python 준비와 빌드
+→ Conda 인식 환경·모델 준비 → 검증 → 장비 보정과 CAN 연결 → 실행** 순서입니다.
+설치·빌드 명령은 [INSTALL.md](INSTALL.md), 첫 연결과 실행은 [ROBOT.md](ROBOT.md)에
+있습니다. ROS는 `/opt/ros/humble`, 프로젝트 빌드 결과는 `.workspace/`에 놓입니다.
+제어용 `.venv-robot`은 실행 스크립트가 선택하므로 별도로 활성화하지 않아도 됩니다.
+ROS까지 Conda에 넣는 RoboStack 방식은 현재 저장소에서 검증한 설치 경로가 아닙니다.
+
+전체 알고리즘에는 PiPER 팔·평행 그리퍼 외에도 손목의 RealSense D435와
+SocketCAN 연결, 기본 실시간 인식 설정에 맞는 CUDA GPU 환경이 필요합니다.
+카메라 장착·TCP·박스 치수·작업영역은 제3자의 실제 장비에 맞춰 보정해야 합니다.
+
 실험 PC에서 쓰던 폴더와 독립적인 구조입니다. 기존 `~/run_robot.sh` 등의
 개인용 바로가기를 덮어쓰지 않습니다. 이 저장소를 사용할 때는 저장소 루트에서:
 

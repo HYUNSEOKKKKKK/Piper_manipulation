@@ -5,6 +5,23 @@ operation requires an unobstructed workspace, functional stop controls and
 hardware-specific calibration. Keep hands out of the motion volume while a
 sequence or reset is active.
 
+## Equipment for the documented pipeline
+
+The complete vision-to-arm example uses:
+
+- An AgileX PiPER arm with the parallel gripper, its power supply and a
+  Linux SocketCAN-compatible connection between the PC and arm.
+- A wrist-mounted Intel RealSense D435, its USB connection and a measured mount
+  transform. The example consumes RGB, aligned depth and camera intrinsics.
+- An Ubuntu 22.04 PC with the installed ROS 2 Humble workspace and the documented
+  CUDA-capable perception environment.
+- Boxes with known dimensions matching the shared object catalog, plus measured
+  source/drop regions and a usable robot stop control.
+
+The robot arm alone does not supply the images, calibration or work-area
+measurements required by this perception algorithm. The supplied dimensions and
+mount/workspace values describe the development setup; adapt them below.
+
 ## Configure the actual setup
 
 - Measure camera extrinsics in `ros2/piper_pnp/urdf/custom_piper_d435.xacro`.
@@ -24,18 +41,57 @@ sequence or reset is active.
 - Verify CAN at 1 Mbit/s and PC control mode. The wrappers reject warning/passive
   CAN states and retained teaching mode. They do not toggle hardware modes on launch.
 
-## Three terminals
+## First CAN connection
 
-Run at the repository root after configuration:
+With the arm powered and the supported CAN adapter connected, identify the
+interface exposed by Linux:
 
 ```bash
-# 1
+ip -brief link
+```
+
+Use the actual CAN interface name. With all robot programs stopped, configure
+it at 1 Mbit/s; the following example uses `can0`:
+
+```bash
+sudo ip link set can0 down
+sudo ip link set can0 up type can bitrate 1000000
+ip -details -statistics link show can0
+```
+
+The interface must be UP and ERROR-ACTIVE for physical execution. If Linux has
+not created a CAN interface, install/configure the adapter's driver first.
+For an interface named differently, export `PIPER_CAN=<actual-name>` in each
+execution terminal. Check the arm's PC control mode before launch.
+
+## Three terminals
+
+After installation validation and physical configuration, open three terminals.
+Use the path where you cloned the repository; these examples assume
+`~/Piper_manipulation`.
+
+```bash
+# Terminal 1: robot driver, MoveIt, camera and controller
+cd ~/Piper_manipulation
 bash scripts/run_robot.sh feed-auto
-# 2
+```
+
+```bash
+# Terminal 2: perception
+cd ~/Piper_manipulation
+conda activate piper_manipulation
 bash scripts/run_bridge.sh feed-auto
-# 3
+```
+
+```bash
+# Terminal 3: operator console
+cd ~/Piper_manipulation
 bash scripts/run_console.sh
 ```
+
+The scripts source ROS and this project's built workspace. Terminal 1 uses the
+robot Python entry points built with `.venv-robot`; terminal 2 selects the named
+Conda Python. No manual activation of `.venv-robot` is needed.
 
 Click terminal 3, clear the workspace, then press **c once, without Enter**.
 The controller observes a stable source target, picks it, retreats, moves to the
